@@ -5,10 +5,7 @@ import com.vesmer.inmotive.service.AuthService;
 import com.vesmer.inmotive.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -30,4 +27,9 @@ public class AuthController {
         return new ResponseEntity<>("User Registration Successful", OK);
     }
 
+    @GetMapping("/activate/{username}")
+    public ResponseEntity<String> activateAccount(@PathVariable String username) {
+        authService.enableAccount(username);
+        return new ResponseEntity<>("Account Activation Successfully", OK);
+    }
 }
