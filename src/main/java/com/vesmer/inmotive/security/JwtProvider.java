@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.time.Instant;
 import java.util.Date;
@@ -42,7 +40,6 @@ public class JwtProvider {
         return generateTokenWithUsername(principal.getUsername());
     }
 
-
     public String generateTokenWithUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -52,5 +49,12 @@ public class JwtProvider {
                 .compact();
     }
 
-
+    private PrivateKey getPrivateKey() {
+        try {
+            return (PrivateKey) keyStore.getKey("inmotive", "password".toCharArray());
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            throw new InmotiveException("Exception occurred while retrieving " +
+                    "private key form keystore", e);
+        }
+    }
 }
