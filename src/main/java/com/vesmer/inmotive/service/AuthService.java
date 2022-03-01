@@ -38,4 +38,12 @@ public class AuthService {
 
         userRepository.save(user);
     }
+
+    public void enableAccount(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new InmotiveException("User " + "not found")
+        );
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 }
