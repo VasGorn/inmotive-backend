@@ -1,5 +1,7 @@
 package com.vesmer.inmotive.controller;
 
+import com.vesmer.inmotive.dto.AuthenticationResponse;
+import com.vesmer.inmotive.dto.LoginRequest;
 import com.vesmer.inmotive.dto.RegisterRequest;
 import com.vesmer.inmotive.service.AuthService;
 import com.vesmer.inmotive.service.RefreshTokenService;
@@ -31,5 +33,10 @@ public class AuthController {
     public ResponseEntity<String> activateAccount(@PathVariable String username) {
         authService.enableAccount(username);
         return new ResponseEntity<>("Account Activation Successfully", OK);
+    }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 }
