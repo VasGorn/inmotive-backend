@@ -1,7 +1,11 @@
 package com.vesmer.inmotive.security;
 
 import com.vesmer.inmotive.exception.InmotiveException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -11,6 +15,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.time.Instant;
+import java.util.Date;
 
 @Service
 public class JwtProvider {
@@ -30,4 +36,21 @@ public class JwtProvider {
             throw new InmotiveException("Exception occurred while loading keystore", e);
         }
     }
+
+    public String generateToken(Authentication authentication) {
+        User principal = (User) authentication.getPrincipal();
+        return generateTokenWithUsername(principal.getUsername());
+    }
+
+
+    public String generateTokenWithUsername(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(Date.from(Instant.now()))
+                .signWith(SignatureAlgorithm.RS512, getPrivateKey())
+                .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                .compact();
+    }
+
+
 }
