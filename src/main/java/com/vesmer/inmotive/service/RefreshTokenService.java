@@ -1,6 +1,7 @@
 package com.vesmer.inmotive.service;
 
 
+import com.vesmer.inmotive.exception.InmotiveException;
 import com.vesmer.inmotive.model.RefreshToken;
 import com.vesmer.inmotive.repository.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,10 @@ public class RefreshTokenService {
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken.setCreated(Instant.now());
         return refreshTokenRepository.save(refreshToken);
+    }
+
+    public void validateRefreshToken(String token) {
+        refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new InmotiveException("Invalid refresh Token"));
     }
 }
