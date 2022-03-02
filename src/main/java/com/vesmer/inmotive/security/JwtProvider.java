@@ -35,6 +35,10 @@ public class JwtProvider {
         }
     }
 
+    public Long getJwtExpirationInMillis() {
+        return jwtExpirationInMillis;
+    }
+
     public String generateToken(Authentication authentication) {
         User principal = (User) authentication.getPrincipal();
         return generateTokenWithUsername(principal.getUsername());
