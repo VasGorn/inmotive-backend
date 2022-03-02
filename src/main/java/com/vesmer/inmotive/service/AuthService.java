@@ -2,6 +2,7 @@ package com.vesmer.inmotive.service;
 
 import com.vesmer.inmotive.dto.AuthenticationResponse;
 import com.vesmer.inmotive.dto.LoginRequest;
+import com.vesmer.inmotive.dto.RefreshTokenRequest;
 import com.vesmer.inmotive.dto.RegisterRequest;
 import com.vesmer.inmotive.exception.InmotiveException;
 import com.vesmer.inmotive.model.User;
@@ -77,6 +78,18 @@ public class AuthService {
                 .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(loginRequest.getUsername())
+                .build();
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token =
+                jwtProvider.generateTokenWithUsername(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(refreshTokenRequest.getUsername())
                 .build();
     }
 }
