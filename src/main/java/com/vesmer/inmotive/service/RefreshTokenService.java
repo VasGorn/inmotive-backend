@@ -32,4 +32,8 @@ public class RefreshTokenService {
         refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new InmotiveException("Invalid refresh Token"));
     }
+
+    public void deleteRefreshToken(String token) {
+        refreshTokenRepository.deleteByToken(token);
+    }
 }
