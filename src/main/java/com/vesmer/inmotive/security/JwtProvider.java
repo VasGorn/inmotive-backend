@@ -53,12 +53,26 @@ public class JwtProvider {
                 .compact();
     }
 
+    public boolean validateToken(String jwt) {
+        Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
+        return true;
+    }
+
     private PrivateKey getPrivateKey() {
         try {
             return (PrivateKey) keyStore.getKey("inmotive", "password".toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new InmotiveException("Exception occurred while retrieving " +
                     "private key form keystore", e);
+        }
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("inmotive").getPublicKey();
+        } catch (KeyStoreException e) {
+            throw new InmotiveException("Exception occurred while retrieving " +
+                    "public key from keystore", e);
         }
     }
 }
