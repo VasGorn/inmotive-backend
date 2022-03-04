@@ -1,6 +1,7 @@
 package com.vesmer.inmotive.security;
 
 import com.vesmer.inmotive.exception.InmotiveException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +57,14 @@ public class JwtProvider {
     public boolean validateToken(String jwt) {
         Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(jwt);
         return true;
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getPublicKey())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 
     private PrivateKey getPrivateKey() {
