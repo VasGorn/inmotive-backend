@@ -1,6 +1,7 @@
 package com.vesmer.inmotive.controller;
 
 import com.vesmer.inmotive.dto.apierror.ApiError;
+import com.vesmer.inmotive.exception.InmotiveException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -14,8 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+import static org.springframework.http.HttpStatus.*;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -61,6 +61,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError apiError = new ApiError(BAD_REQUEST);
         apiError.setMessage("Validation error");
         apiError.addValidationErrors(ex.getConstraintViolations());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InmotiveException.class)
+    protected ResponseEntity<Object> handleAppError(
+            InmotiveException ex) {
+        ApiError apiError = new ApiError(INTERNAL_SERVER_ERROR);
+        apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
