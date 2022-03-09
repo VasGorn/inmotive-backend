@@ -41,7 +41,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are ");
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
-        return buildResponseEntity(new ApiError(UNSUPPORTED_MEDIA_TYPE, builder.substring(0, builder.length() - 2), ex));
+        return buildResponseEntity(new ApiError(UNSUPPORTED_MEDIA_TYPE,
+                builder.substring(0, builder.length() - 2), ex));
     }
 
     @Override
@@ -75,7 +76,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
         ServletWebRequest servletWebRequest = (ServletWebRequest) request;
         String error = "Malformed JSON request";
         return buildResponseEntity(new ApiError(BAD_REQUEST, error, ex));
