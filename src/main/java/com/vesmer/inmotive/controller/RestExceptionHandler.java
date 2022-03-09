@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -82,6 +83,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         ServletWebRequest servletWebRequest = (ServletWebRequest) request;
         String error = "Malformed JSON request";
         return buildResponseEntity(new ApiError(BAD_REQUEST, error, ex));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotWritable(
+            HttpMessageNotWritableException ex, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
+        String error = "Error writing JSON output";
+        return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, error, ex));
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
