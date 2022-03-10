@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -118,6 +119,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             return buildResponseEntity(new ApiError(CONFLICT, "Database error", ex.getCause()));
         }
         return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, ex));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                                      WebRequest request) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage(
+                String.format("The parameter '%s' of value '%s' could " +
+                        "not be converted to type '%s'", ex.getName(),
+                        ex.getValue(), ex.getRequiredType().getSimpleName()));
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
