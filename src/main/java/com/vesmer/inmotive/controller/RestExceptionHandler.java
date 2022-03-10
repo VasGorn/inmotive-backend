@@ -64,23 +64,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(javax.validation.ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleConstraintViolation(
-            javax.validation.ConstraintViolationException ex) {
-        ApiError apiError = new ApiError(BAD_REQUEST);
-        apiError.setMessage("Validation error");
-        apiError.addValidationErrors(ex.getConstraintViolations());
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(InmotiveException.class)
-    protected ResponseEntity<Object> handleAppError(
-            InmotiveException ex) {
-        ApiError apiError = new ApiError(INTERNAL_SERVER_ERROR);
-        apiError.setMessage(ex.getMessage());
-        return buildResponseEntity(apiError);
-    }
-
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers,
@@ -107,11 +90,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-    @ExceptionHandler(javax.persistence.EntityNotFoundException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(javax.persistence.EntityNotFoundException ex) {
-        return buildResponseEntity(new ApiError(NOT_FOUND, ex));
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
                                                                   WebRequest request) {
@@ -119,6 +97,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             return buildResponseEntity(new ApiError(CONFLICT, "Database error", ex.getCause()));
         }
         return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, ex));
+    }
+
+    @ExceptionHandler(javax.persistence.EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFound(javax.persistence.EntityNotFoundException ex) {
+        return buildResponseEntity(new ApiError(NOT_FOUND, ex));
+    }
+
+    @ExceptionHandler(javax.validation.ConstraintViolationException.class)
+    protected ResponseEntity<Object> handleConstraintViolation(
+            javax.validation.ConstraintViolationException ex) {
+        ApiError apiError = new ApiError(BAD_REQUEST);
+        apiError.setMessage("Validation error");
+        apiError.addValidationErrors(ex.getConstraintViolations());
+        return buildResponseEntity(apiError);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -130,6 +122,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         "not be converted to type '%s'", ex.getName(),
                         ex.getValue(), ex.getRequiredType().getSimpleName()));
         apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InmotiveException.class)
+    protected ResponseEntity<Object> handleAppError(InmotiveException ex) {
+        ApiError apiError = new ApiError(INTERNAL_SERVER_ERROR);
+        apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
