@@ -4,6 +4,7 @@ import com.vesmer.inmotive.dto.apierror.ApiError;
 import com.vesmer.inmotive.exception.InmotiveException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.ConstraintViolationException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -101,6 +104,20 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(javax.persistence.EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFound(javax.persistence.EntityNotFoundException ex) {
+        return buildResponseEntity(new ApiError(NOT_FOUND, ex));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+                                                                  WebRequest request) {
+        if (ex.getCause() instanceof ConstraintViolationException) {
+            return buildResponseEntity(new ApiError(CONFLICT, "Database error", ex.getCause()));
+        }
+        return buildResponseEntity(new ApiError(INTERNAL_SERVER_ERROR, ex));
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
