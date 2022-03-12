@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/v1/project")
@@ -16,6 +19,11 @@ public class ProjectController {
     @Autowired
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Collection<ProjectDto>> getAllForUser() {
+        return ResponseEntity.status(OK).body(projectService.getAllForUser());
     }
 
     @PostMapping
