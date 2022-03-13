@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,6 +26,14 @@ public class ProjectService {
         this.projectRepository = projectRepository;
         this.authService = authService;
         this.projectMapper = projectMapper;
+    }
+
+    public Collection<ProjectDto> getAllForUser() {
+        User user = authService.getCurrentUser();
+        Collection<Project> projects = projectRepository.findByUser(user);
+        return projects.stream()
+                .map(projectMapper::mapProjectToDto)
+                .collect(Collectors.toList());
     }
 
     public ProjectDto save(ProjectDto projectDto) {
