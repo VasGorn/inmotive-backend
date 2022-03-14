@@ -45,4 +45,9 @@ public class ProjectService {
         projectDto.setId(savedProject.getId());
         return projectDto;
     }
+
+    public Boolean delete(Long id) {
+        projectRepository.deleteById(id);
+        return Boolean.TRUE;
+    }
 }
