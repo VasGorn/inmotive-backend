@@ -30,4 +30,10 @@ public class ProjectController {
     public ResponseEntity<ProjectDto> saveProject(@RequestBody ProjectDto projectDto) {
         return ResponseEntity.status(CREATED).body(projectService.save(projectDto));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
+        projectService.delete(id);
+        return new ResponseEntity<>(OK);
+    }
 }
