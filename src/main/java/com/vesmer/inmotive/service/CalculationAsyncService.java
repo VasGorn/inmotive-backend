@@ -14,6 +14,13 @@ public class CalculationAsyncService {
     private final AtomicReference<ConcurrentHashMap<Long, CalculationStatus>>
             calcProgressMap = new AtomicReference<>(new ConcurrentHashMap<>());
 
+    public boolean containsCalcEntry(Long projectId) {
+        if (calcProgressMap.get() != null) {
+            return calcProgressMap.get().containsKey(projectId);
+        }
+        return false;
+    }
+
     @Async
     public CompletableFuture<CalculationStatus> asyncManager(Long projectId) {
         CalculationStatus calcStatus =
