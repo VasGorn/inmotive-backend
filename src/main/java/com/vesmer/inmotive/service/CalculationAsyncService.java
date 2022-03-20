@@ -21,6 +21,14 @@ public class CalculationAsyncService {
         return false;
     }
 
+    public CalculationStatus getStatus(Long projectId) {
+        CalculationStatus status = calcProgressMap.get().get(projectId);
+        if (status == null) {
+            status = new CalculationStatus(true, 0, null);
+        }
+        return status;
+    }
+
     @Async
     public CompletableFuture<CalculationStatus> asyncManager(Long projectId) {
         CalculationStatus calcStatus =
