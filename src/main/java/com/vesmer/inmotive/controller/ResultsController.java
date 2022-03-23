@@ -3,6 +3,7 @@ package com.vesmer.inmotive.controller;
 import com.vesmer.inmotive.dto.ResultResponse;
 import com.vesmer.inmotive.exception.InmotiveException;
 import com.vesmer.inmotive.model.CalculationStatus;
+import com.vesmer.inmotive.model.Point;
 import com.vesmer.inmotive.model.ResultChartData;
 import com.vesmer.inmotive.service.CalculationAsyncService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,33 @@ public class ResultsController {
         response.setChartsData(chartData);
 
         return ResponseEntity.status(OK).body(response);
+    }
+
+    private ResultChartData[] inMemoryChartData() {
+        Point point11 = new Point(250, 25);
+        Point point12 = new Point(500, 22.5);
+        Point point13 = new Point(1500, 23);
+        Point point14 = new Point(2250, 35);
+        Point[] pointArr1 = {point11, point12, point13, point14};
+        ResultChartData data1 = new ResultChartData("Current consumption by motor",
+                "Speed, rpm", "Current consumption by motor, A", pointArr1);
+
+        Point point21 = new Point(250, 3000);
+        Point point22 = new Point(500, 4500);
+        Point point23 = new Point(1500, 12000);
+        Point point24 = new Point(2250, 20000);
+        Point[] pointArr2 = {point21, point22, point23, point24};
+        ResultChartData data2 = new ResultChartData("Power consumption by motor",
+                "Speed, rpm", "Power consumption by motor, W", pointArr2);
+
+        Point point31 = new Point(250, 0.6);
+        Point point32 = new Point(500, 0.75);
+        Point point33 = new Point(1500, 0.85);
+        Point point34 = new Point(2250, 0.8);
+        Point[] pointArr3 = {point31, point32, point33, point34};
+        ResultChartData data3 = new ResultChartData("Motor efficiency",
+                "Speed, rpm", "Motor efficiency, r.u.", pointArr3);
+
+        return new ResultChartData[]{data1, data2, data3};
     }
 }
