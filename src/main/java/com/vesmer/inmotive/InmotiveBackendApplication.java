@@ -2,6 +2,7 @@ package com.vesmer.inmotive;
 
 import com.vesmer.inmotive.config.SwaggerConfig;
 import com.vesmer.inmotive.dto.RegisterRequest;
+import com.vesmer.inmotive.model.Project;
 import com.vesmer.inmotive.model.User;
 import com.vesmer.inmotive.repository.ProjectRepository;
 import com.vesmer.inmotive.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.time.Instant;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -31,6 +33,11 @@ public class InmotiveBackendApplication {
 						  UserRepository userRepository) {
 		return args -> {
 			initialUserRegistration(authService, userRepository);
+
+			User user = userRepository.findByUsername("nix").orElseThrow(
+					() -> new UsernameNotFoundException("Username not found - nix")
+			);
+			createUserProjects(user, projectRepository);
 		};
 	}
 
@@ -55,9 +62,29 @@ public class InmotiveBackendApplication {
 				"nix", "1111");
 		authService.signup(registerRequest);
 		authService.enableAccount("nix");
+	}
 
-		User user = userRepository.findByUsername("nix").orElseThrow(
-				() -> new UsernameNotFoundException("Username not found - nix")
-		);
+	private void createUserProjects(User user, ProjectRepository projectRepository) {
+			Project project1 = Project.builder()
+					.name("first name project")
+					.description("first description project")
+					.supplyVoltage(380.0)
+					.supplyFrequency(50)
+					.maxSlip(0.2)
+					.user(user)
+					.created(Instant.ofEpochSecond(1641793924))
+					.build();
+			Project project2 = Project.builder()
+					.name("second name project")
+					.description("second description project")
+					.supplyVoltage(190.0)
+					.supplyFrequency(60.0)
+					.maxSlip(1.0)
+					.user(user)
+					.created(Instant.ofEpochSecond(1641893924))
+					.build();
+
+			projectRepository.save(project1);
+			projectRepository.save(project2);
 	}
 }
