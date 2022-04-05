@@ -1,10 +1,17 @@
 package com.vesmer.inmotive;
 
 import com.vesmer.inmotive.config.SwaggerConfig;
+import com.vesmer.inmotive.dto.RegisterRequest;
+import com.vesmer.inmotive.model.User;
+import com.vesmer.inmotive.repository.ProjectRepository;
+import com.vesmer.inmotive.repository.UserRepository;
+import com.vesmer.inmotive.service.AuthService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -17,6 +24,14 @@ public class InmotiveBackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(InmotiveBackendApplication.class, args);
+	}
+
+	@Bean
+	CommandLineRunner run(AuthService authService, ProjectRepository projectRepository,
+						  UserRepository userRepository) {
+		return args -> {
+			initialUserRegistration(authService, userRepository);
+		};
 	}
 
 	@Bean
@@ -33,5 +48,16 @@ public class InmotiveBackendApplication {
 		UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 		return new CorsFilter(urlBasedCorsConfigurationSource);
+	}
+
+	private void initialUserRegistration(AuthService authService, UserRepository userRepository){
+		RegisterRequest registerRequest = new RegisterRequest("nix-email@mail.com",
+				"nix", "1111");
+		authService.signup(registerRequest);
+		authService.enableAccount("nix");
+
+		User user = userRepository.findByUsername("nix").orElseThrow(
+				() -> new UsernameNotFoundException("Username not found - nix")
+		);
 	}
 }
