@@ -27,9 +27,11 @@ public class SwaggerConfig {
 
     private ApiInfo getApiInfo() {
         return new ApiInfoBuilder()
-                .title("Reddit Clone API")
+                .title("Inmotive API")
                 .version("0.1")
-                .description("API for Reddit Clone Application")
+                .description("API for the 'inmotive'. The web app purpose is " +
+                        "to study the operation of induction motors in " +
+                        "controlled semiconductor drive systems")
                 .contact(new Contact("Vasiliy Goroshko", "http://my-site.com",
                         "vas.goroshko@gmail.com"))
                 .license("Apache License Version 2.0")
